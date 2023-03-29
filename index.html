@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section class="container">
+        <div class="inner-container">
+            <div class="score box margin-bottom text-center">Your Score is: <strong id="score">0</strong></div>
+            <div class="gameplay box">
+                <div id="title" class="margin-bottom"></div>
+                <div id="condition" class="margin-bottom text-center"></div>
+                <div class="gamebody">
+                    <input type="number" id="answer" class="margin-bottom">
+                    <br>
+                    <button type="button" id="submit" class="btn-green">Answer</button>
+                    <button type="button" id="nextgame" class="btn-green">Next Game</button>
+                    <button type="button" id="restart" class="btn-red">Restart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
