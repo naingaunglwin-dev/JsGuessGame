@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const randomNum = (min, max) => {
-        return Math.floor(Math.random() * (max - min - 1) + min + 1)
+        return Math.floor(Math.random() * (max - min - 1) + min + 1);
     }
 
     const randomMinMax = () => {
@@ -29,19 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let answerValue = answer.value;
         switch (true) {
             case answerValue == min:
-                conditionDiv.innerHTML = `<p class="red">Please Answer Only Between ${min} and ${max}`;
+                conditionDiv.innerText = `Please Answer Only Between ${min} and ${max}`;
                 break;
             case answerValue == max:
-                conditionDiv.innerHTML = `<p class="red">Please Answer Only Between ${min} and ${max}`;
+                conditionDiv.innerText = `Please Answer Only Between ${min} and ${max}`;
                 break;
             case answerValue > getRandomNum && answerValue <= max:
-                conditionDiv.innerHTML = '<p class="red">Sorry, Please Try Smaller Number</p>';
+                conditionDiv.innerText = 'Sorry, Please Try Smaller Number';
                 break;
             case answerValue < getRandomNum && answerValue >= min:
-                conditionDiv.innerHTML = '<p class="red">Sorry, Please Try Larger Number</p>';
+                conditionDiv.innerText = 'Sorry, Please Try Larger Number';
                 break;
             case answerValue == '':
-                conditionDiv.innerHTML = '<p class="red">Please put the value first to guess</p>';
+                conditionDiv.innerText = 'Please put the value first to guess';
                 break;
             case answerValue == getRandomNum:
                 score++;
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextGameBtn.style.display = 'inline-block';
                 break;
             default:
-                conditionDiv.innerHTML = `<p class="red">Please Answer Only Between ${min} and ${max}`;
+                conditionDiv.innerText = `Please Answer Only Between ${min} and ${max}`;
                 break;
         }
     });
@@ -59,16 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     nextGameBtn.addEventListener('click', () => {
         ({min, max}  = randomMinMax());
         getRandomNum = randomNum(min, max);
+        answer.value = '';
+        titleDiv.textContent = `Guess number between ${min} and ${max}`;
         conditionDiv.innerHTML    = '';
         submitBtn.style.display   = 'inline-block';
         nextGameBtn.style.display = 'none';
-        answer.value = '';
-
-        titleDiv.textContent = `Guess number between ${min} and ${max}`;
-    })
+    });
 
     restartBtn.addEventListener('click', () => {
         return window.location.reload();
-    })
+    });
 
 });
