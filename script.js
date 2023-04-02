@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let score = 0;
+    let guessTime    = 0;
     let {min, max}   = randomMinMax();
     let getRandomNum = randomNum(min, max);
 
@@ -22,11 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const answer        = document.getElementById('answer');
     const conditionDiv  = document.getElementById('condition');
     const titleDiv      = document.getElementById('title');
+    const guessDiv      = document.getElementById('guess-time');
 
     titleDiv.textContent = `Guess number between ${min} and ${max}`;
 
     submitBtn.addEventListener('click', () => {
-        let answerValue = answer.value;
+        let answerValue = Number(answer.value);
+        guessTime++;
+        guessDiv.innerText = guessTime;
         switch (true) {
             case answerValue == min:
                 conditionDiv.innerText = `Please Answer Only Between ${min} and ${max}`;
@@ -62,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         answer.value = '';
         titleDiv.textContent = `Guess number between ${min} and ${max}`;
         conditionDiv.innerHTML    = '';
+        guessDiv.innerText = 0;
         submitBtn.style.display   = 'inline-block';
         nextGameBtn.style.display = 'none';
     });
