@@ -1,9 +1,9 @@
 # Random Number Guessing Game With JavaScript
 
 # Introduction
-This is a simple random number guessing game created using JavaScript. There are two ways to use it: by cloning the repo or by downloading the files.
+This is a simple random number guessing game created using JavaScript. There are two ways to use it.
 
-There is 2 ways to use.
+Two ways to use.
 * Cloning the Repo
 * Downloading the Files
 
