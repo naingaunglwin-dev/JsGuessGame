@@ -72,7 +72,7 @@ section.container div.inner-container div.gameplay div.gamebody button#nextgame 
     display: none;
 }
 
-.best-guess-count {
+.total-matches {
     margin-top: 10px;
 }
 
@@ -170,7 +170,7 @@ section.container div.inner-container div.gameplay div.gamebody button#nextgame 
         gap: 5px;
     }
 
-    .best-guess-count {
+    .total-matches {
         margin-top: 5px;
     }
 

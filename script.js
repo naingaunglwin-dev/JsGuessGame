@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     let level = "level-easy";
+    let match = 0;
 
     const levelBtn = document.querySelectorAll('.level-choose');
 
@@ -50,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let guessTime    = 0;
     let {min, max}   = randomMinMax();
     let getRandomNum = randomNum(min, max);
-    let bestGuessCount = Infinity;
 
     const submitBtn         = document.getElementById('submit');
     const nextGameBtn       = document.getElementById('nextgame');
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const conditionDiv      = document.getElementById('condition');
     const titleDiv          = document.getElementById('title');
     const guessDiv          = document.getElementById('guess-time');
-    const bestGuessCountDiv = document.getElementById('guess');
+    const totalMatchesDiv   = document.getElementById('matches');
 
     conditionDiv.style.display = 'none';
     answer.style.pointerEvents = "all";
@@ -107,6 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 GameSounds("./audio/winner.mp3", 2);
 
+                match++;
+
                 if (level === 'level-hard') {
                     if (guessTime == 1) {
                         score += 15;
@@ -147,11 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 conditionDiv.classList.remove("error");
                 conditionDiv.classList.add("success");
 
-                if (guessTime < bestGuessCount) {
-                    bestGuessCount = guessTime;
-                }
-
-                bestGuessCountDiv.innerText = bestGuessCount;
+                totalMatchesDiv.innerText = match;
 
                 conditionDiv.innerText    = 'Your Answer is correct';
                 submitBtn.style.display   = 'none';
@@ -198,8 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     restartBtn.addEventListener('click', () => {
         document.getElementById('score').innerHTML = '0';
-        bestGuessCount = Infinity;
-        bestGuessCountDiv.innerText = ' - ';
+        match = 0;
+        totalMatchesDiv.innerText = "0";
         score = 0;
         NewGame(level);
     });
