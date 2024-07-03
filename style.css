@@ -1,31 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
-
 * {
-    font-family: 'Roboto', sans-serif;
+    font-family: "Inter", sans-serif;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: linear-gradient(to right top, #f90505, #d32a28, #ab3938, #7f4241, #4f4444);
+    background-repeat: no-repeat;
 }
 
 section.container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 96vh;
+    height: 100vh;
+}
+
+section.container div.inner-container {
+    background: transparent;
+    border-radius: 20px;
 }
 
 section.container div.inner-container div.gameplay div#title {
     font-weight: bold;
+    font-size: 11pt;
 }
 
 section.container div.inner-container div.gameplay div.gamebody input[type=number] {
-    height: 1.5rem;
-    width: 14.5rem;
+    height: 35px;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: rgb(205, 205, 205);
+    padding: 0 8px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 12pt;
+    text-align: center;
+}
+
+section.container div.inner-container div.gameplay div.gamebody .btn-group {
+    display: flex;
+    justify-content: space-between;
 }
 
 section.container div.inner-container div.gameplay div.gamebody button {
     height: 2rem;
-    width: 4rem;
+    width: 7rem;
     border: none;
     border-radius: 0.4rem;
-    color: white;
 }
 
 section.container div.inner-container div.gameplay div.gamebody button:hover {
@@ -34,30 +67,61 @@ section.container div.inner-container div.gameplay div.gamebody button:hover {
 
 section.container div.inner-container div.gameplay div.gamebody button#nextgame {
     display: none;
-    width: 6rem;
 }
 
-.green {
-    color: green;
+.best-guess-count {
+    margin-top: 10px;
 }
 
-.red {
-    color: red;
+.score {
+    margin-bottom: 10px;
 }
 
 .btn-green {
-    background: green;
+    color: #04bf04;
+    font-weight: bold;
+    border: 2px solid #04bf04!important;
 }
 
 .btn-red {
-    background: rgb(187, 21, 21);
+    color: #d32a28;
+    font-weight: bold;
+    border: 2px solid #d32a28!important;
+}
+
+.btn-red:hover {
+    color: white;
+    border: none!important;
+    background: #d32a28;
+}
+
+.btn-green:hover {
+    color: white;
+    border: none!important;
+    background: #04bf04;
 }
 
 .box {
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
     padding: 20px 30px;
-    border-radius: 20px;
+    border-radius: 10px;
     width: 15.7rem;
+    background: #ffffff;
+}
+
+#condition {
+    padding: 10px 5px;
+    border-radius: 8px;
+    color: white;
+    font-size: 11pt;
+}
+
+#condition.error {
+    background: #c84d4a;
+}
+
+#condition.success {
+    background: #04bf04;
 }
 
 .margin-bottom {

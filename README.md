@@ -11,7 +11,7 @@ Two ways to use.
 To clone the repository,
 
 1. Open your terminal and navigate to the directory where you want to clone the repository.
-2. Run the command `https://github.com/NaingAungLwin-WD/JsGuessGame.git`.
+2. Run the command `git clone https://github.com/NaingAungLwin-WD/JsGuessGame.git`.
 
 # Downloading the Files
 To download the files,

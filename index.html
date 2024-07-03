@@ -4,25 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
     <title>Guess</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <section class="container">
         <div class="inner-container">
-            <div class="score box margin-bottom text-center">Your Score is: <strong id="score">0</strong></div>
+            <div class="score box text-center">Your Score is: <strong id="score">0</strong></div>
             <div class="gameplay box">
                 <div class="guess-time text-center margin-bottom">Guess time: <strong id="guess-time">0</strong></div>
                 <div id="title" class="margin-bottom"></div>
-                <div id="condition" class="margin-bottom text-center red"></div>
+                <div id="condition" class="margin-bottom text-center error"></div>
                 <div class="gamebody">
-                    <input type="number" id="answer" class="margin-bottom">
+                    <input type="number" id="answer" class="margin-bottom" min="0" max="99" oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);">
                     <br>
-                    <button type="button" id="submit" class="btn-green">Answer</button>
-                    <button type="button" id="nextgame" class="btn-green">Next Game</button>
-                    <button type="button" id="restart" class="btn-red">Restart</button>
+                    <div class="btn-group">
+                        <button type="button" id="submit" class="btn-green">Answer</button>
+                        <button type="button" id="nextgame" class="btn-green">Next Game</button>
+                        <button type="button" id="restart" class="btn-red">Restart</button>
+                    </div>
                 </div>
             </div>
+            <div class="best-guess-count box text-center">Your Best Guess Count: <strong id="guess"> - </strong></div>
         </div>
     </section>
 
