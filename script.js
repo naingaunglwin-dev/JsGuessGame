@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
                 break;
             case answerValue > getRandomNum && answerValue <= max:
-                GameSounds("./audio/wrong.mp3", 1.5);
+                GameSounds("./audio/wrong.mp3", 7);
                 if (Math.abs(answerValue - getRandomNum) <= 2) {
                     conditionDiv.innerText = 'Almost there, please try a smaller number';
                 } else {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case answerValue == getRandomNum:
                 answer.style.pointerEvents = "none";
 
-                GameSounds("./audio/winner.mp3", 1.5);
+                GameSounds("./audio/winner.mp3", 2);
 
                 if (level === 'level-hard') {
                     if (guessTime == 1) {
