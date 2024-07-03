@@ -1,16 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    let level = "level-easy";
+
+    const levelBtn = document.querySelectorAll('.level-choose');
+
+    levelBtn.forEach(button => {
+        button.addEventListener('click', () => ChangeLevel(button))
+    });
+
+    console.log(level);
+
     const randomNum = (min, max) => {
         return Math.floor(Math.random() * (max - min - 1) + min + 1);
-    }
+    };
 
-    const randomMinMax = () => {
-        const validNumbers = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+    const randomMinMax = (level = 0) => {
+        const validNumbers = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90];
         const randomIndex  = randomNum(0, validNumbers.length -1);
-        const min = validNumbers[randomIndex];
-        const max = min + 10;
+
+        let plus, min;
+
+        switch (level) {
+            case "level-easy":
+                min  = validNumbers[randomIndex];
+                plus = 10;
+                break;
+
+            case "level-medium":
+                min  = validNumbers[randomIndex < 8 ? randomIndex : randomNum(0, 8)];
+                plus = 40;
+                break;
+
+            case "level-hard":
+                min  = 10
+                plus = 80;
+                break;
+
+            default:
+                min  = validNumbers[randomIndex];
+                plus = 10;
+                break;
+        }
+
+        const max = min + plus;
         return {min, max};
-    }
+    };
 
     let score = 0;
     let guessTime    = 0;
@@ -42,12 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         switch (true) {
             case answerValue == min:
+                GameSounds("./audio/wrong.mp3", 7);
                 conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
                 break;
             case answerValue == max:
+                GameSounds("./audio/wrong.mp3", 7);
                 conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
                 break;
             case answerValue > getRandomNum && answerValue <= max:
+                GameSounds("./audio/wrong.mp3", 1.5);
                 if (Math.abs(answerValue - getRandomNum) <= 2) {
                     conditionDiv.innerText = 'Almost there, please try a smaller number';
                 } else {
@@ -55,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 break;
             case answerValue < getRandomNum && answerValue >= min:
+                GameSounds("./audio/wrong.mp3", 7);
                 if (Math.abs(answerValue - getRandomNum) <= 2) {
                     conditionDiv.innerText = 'Almost there, please try a larger number';
                 } else {
@@ -66,7 +104,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case answerValue == getRandomNum:
                 answer.style.pointerEvents = "none";
-                score++;
+
+                GameSounds("./audio/winner.mp3", 1.5);
+
+                if (level === 'level-hard') {
+                    if (guessTime == 1) {
+                        score += 15;
+                    } else if (guessTime == 2) {
+                        score += 12;
+                    } else if (guessTime == 3) {
+                        score += 9;
+                    } else if (guessTime == 4 || guessTime == 5) {
+                        score += 6;
+                    } else if (guessTime == 6) {
+                        score += 3;
+                    } else {
+                        score += 1;
+                    }
+                } else if (level === 'level-medium') {
+                    if (guessTime == 1) {
+                        score += 8;
+                    } else if (guessTime == 2) {
+                        score += 6;
+                    } else if (guessTime == 3) {
+                        score += 4;
+                    } else if (guessTime == 4 || guessTime == 5) {
+                        score += 3;
+                    } else {
+                        score += 1;
+                    }
+                } else {
+                    if (guessTime == 1) {
+                        score += 5;
+                    } else if (guessTime == 2) {
+                        score += 3;
+                    } else {
+                        score += 1;
+                    }
+                }
+
                 document.getElementById('score').innerHTML = score;
                 conditionDiv.classList.remove("error");
                 conditionDiv.classList.add("success");
@@ -88,8 +164,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const NewGame = () => {
-        ({min, max}  = randomMinMax());
+    const ChangeLevel = (clicked) => {
+        levelBtn.forEach(button => button.classList.remove('active'));
+        clicked.classList.add('active');
+
+        level = clicked.id;
+        NewGame(clicked.id);
+    };
+
+    const GameSounds = (sound, speed = 1) => {
+        let audio = new Audio(sound);
+        audio.playbackRate = speed
+        audio.play();
+    };
+
+    const NewGame = (level) => {
+        ({min, max}  = randomMinMax(level));
         getRandomNum = randomNum(min, max);
         guessTime = 0;
         answer.value = '';
@@ -103,14 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     nextGameBtn.addEventListener('click', () => {
-        NewGame();
+        NewGame(level);
     });
 
     restartBtn.addEventListener('click', () => {
         document.getElementById('score').innerHTML = '0';
         bestGuessCount = Infinity;
         bestGuessCountDiv.innerText = ' - ';
-        NewGame();
+        score = 0;
+        NewGame(level);
     });
 
 });

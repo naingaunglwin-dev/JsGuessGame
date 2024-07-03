@@ -29,6 +29,9 @@ section.container {
 section.container div.inner-container {
     background: transparent;
     border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 section.container div.inner-container div.gameplay div#title {
@@ -102,11 +105,41 @@ section.container div.inner-container div.gameplay div.gamebody button#nextgame 
 }
 
 .box {
-    box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
     padding: 20px 30px;
-    border-radius: 10px;
     width: 15.7rem;
+}
+
+.box,
+.menu-box {
+    box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+    border-radius: 10px;
     background: #ffffff;
+}
+
+.menu-box {
+    padding: 10px;
+    font-size: 8pt;
+}
+
+.menu-box div.menu-group .title {
+    text-align: left;
+}
+
+.menu-box div.menu-group > div.level-choose {
+    background: #d5d5d5;
+    padding: 10px 5px;
+    border-radius: 10px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.menu-box div.menu-group > div.level-choose.active {
+    border: 1px solid #d32a28;
+}
+
+.menu-box div.menu-group > div.level-choose:hover {
+    cursor: pointer;
+    background: #e6e6e6;
 }
 
 #condition {
@@ -130,4 +163,22 @@ section.container div.inner-container div.gameplay div.gamebody button#nextgame 
 
 .text-center {
     text-align: center;
+}
+
+@media screen and (max-width: 408px) {
+    section.container div.inner-container {
+        gap: 5px;
+    }
+
+    .best-guess-count {
+        margin-top: 5px;
+    }
+
+    .score {
+        margin-bottom: 5px;
+    }
+
+    .box {
+        padding: 20px 10px;
+    }
 }

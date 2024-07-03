@@ -15,22 +15,40 @@
 <body>
     <section class="container">
         <div class="inner-container">
-            <div class="score box text-center">Your Score is: <strong id="score">0</strong></div>
-            <div class="gameplay box">
-                <div class="guess-time text-center margin-bottom">Guess time: <strong id="guess-time">0</strong></div>
-                <div id="title" class="margin-bottom"></div>
-                <div id="condition" class="margin-bottom text-center error"></div>
-                <div class="gamebody">
-                    <input type="number" id="answer" class="margin-bottom" min="0" max="99" oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);">
-                    <br>
-                    <div class="btn-group">
-                        <button type="button" id="submit" class="btn-green">Answer</button>
-                        <button type="button" id="nextgame" class="btn-green">Next Game</button>
-                        <button type="button" id="restart" class="btn-red">Restart</button>
+            <div>
+                <div class="score box text-center">Your Score is: <strong id="score">0</strong></div>
+                <div class="gameplay box">
+                    <div class="guess-time text-center margin-bottom">Guess time: <strong id="guess-time">0</strong></div>
+                    <div id="title" class="margin-bottom"></div>
+                    <div id="condition" class="margin-bottom text-center error"></div>
+                    <div class="gamebody">
+                        <input type="number" id="answer" class="margin-bottom" min="0" max="99" oninput="if(this.value.length > 2) this.value = this.value.slice(0, 2);">
+                        <br>
+                        <div class="btn-group">
+                            <button type="button" id="submit" class="btn-green">Answer</button>
+                            <button type="button" id="nextgame" class="btn-green">Next Game</button>
+                            <button type="button" id="restart" class="btn-red">Restart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="best-guess-count box text-center">Your Best Guess Count: <strong id="guess"> - </strong></div>
+            </div>
+            <div class="menu-box">
+                <div class="menu-group">
+                    <div class="title">
+                        Level
+                    </div>
+                    <div class="level-choose active" id="level-easy">
+                        Easy
+                    </div>
+                    <div class="level-choose" id="level-medium">
+                        Medium
+                    </div>
+                    <div class="level-choose" id="level-hard">
+                        Hard
                     </div>
                 </div>
             </div>
-            <div class="best-guess-count box text-center">Your Best Guess Count: <strong id="guess"> - </strong></div>
         </div>
     </section>
 
