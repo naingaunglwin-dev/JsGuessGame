@@ -1,205 +1,402 @@
-document.addEventListener('DOMContentLoaded', () => {
+(function (window, doc) {
 
-    let level = "level-easy";
-    let match = 0;
-
-    const levelBtn = document.querySelectorAll('.level-choose');
-
-    levelBtn.forEach(button => {
-        button.addEventListener('click', () => ChangeLevel(button))
-    });
-
-    console.log(level);
-
-    const randomNum = (min, max) => {
-        return Math.floor(Math.random() * (max - min - 1) + min + 1);
+    /**
+     * Difficulty levels for the guessing game.
+     * @enum {string}
+     */
+    const LEVEL = {
+        EASY: "level-easy",
+        MEDIUM: "level-medium",
+        HARD: "level-hard",
     };
 
-    const randomMinMax = (level = 0) => {
-        const validNumbers = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90];
-        const randomIndex  = randomNum(0, validNumbers.length -1);
+    /**
+     * Guesser object to manage the game's state and functionality.
+     * @namespace Guesser
+     * @property {string} level - The current difficulty level.
+     * @property {number} match - The number of successful guesses.
+     * @property {number} guess - The number of guesses taken in the current game.
+     * @property {number} random - The current random number to be guessed.
+     * @property {number} score - The total score.
+     */
+    let Guesser = {
+        level: LEVEL.EASY,
+        match: 0,
+        guess: 0,
+        random: 0,
+        score: 0,
+    };
+
+    /**
+     * Initializes the game.
+     * Sets up event listeners and starts a new game.
+     * @returns {object} Guesser - The Guesser object.
+     */
+    Guesser.init = () => {
+        Guesser.nextgame();
+        Guesser.restart();
+
+        Guesser.btn.level.forEach(button => {
+            button.addEventListener("click", () => Guesser.changelvl(button))
+        });
+
+        Guesser.random = Guesser.randomNum(__min, __max);
+
+        return Guesser;
+    };
+
+    /**
+     * Generates a random number between min and max.
+     * @param {number} min - The minimum value (inclusive).
+     * @param {number} max - The maximum value (inclusive).
+     * @returns {number} - A random number between min and max.
+     */
+    Guesser.randomNum = (min, max) => {
+        return Math.floor(Math.random() * (max - min - 1)) + min + 1;
+    };
+
+    /**
+     * Generates an array of numbers in a range from min to max.
+     * @param {number} min - The minimum value of the range.
+     * @param {number} max - The maximum value of the range.
+     * @returns {Array<number>} - Array of numbers in the range.
+     */
+    Guesser.range = (min, max) => {
+        const array = [];
+        for (let i = min; i <= max; i++) {
+            array.push(i);
+        }
+
+        return array;
+    }
+
+    /**
+     * Generates random minimum and maximum values based on the current difficulty level.
+     * @returns {Object} - An object containing min and max values.
+     */
+    Guesser.randomMaxAndMin = () => {
+        let level = Guesser.level;
+
+        const allowed = Guesser.range(1, 90);
+        const index = Guesser.randomNum(0, allowed.length)
 
         let plus, min;
 
         switch (level) {
-            case "level-easy":
-                min  = validNumbers[randomIndex];
+            case LEVEL.EASY:
+                min  = allowed[index];
                 plus = 10;
+
                 break;
 
-            case "level-medium":
-                min  = validNumbers[randomIndex < 8 ? randomIndex : randomNum(0, 8)];
+            case LEVEL.MEDIUM:
+                min = allowed[index < 50 ? index : Guesser.randomNum(0, 60)];
                 plus = 40;
+
                 break;
 
-            case "level-hard":
-                min  = 10
-                plus = 80;
+            case LEVEL.HARD:
+                min  = 1;
+                plus = 99;
+
                 break;
 
             default:
-                min  = validNumbers[randomIndex];
+                min = allowed[index];
                 plus = 10;
+
                 break;
         }
 
-        const max = min + plus;
-        return {min, max};
+        let max = min + plus;
+
+        return {min: min, max: max};
     };
 
-    let score = 0;
-    let guessTime    = 0;
-    let {min, max}   = randomMinMax();
-    let getRandomNum = randomNum(min, max);
+    /**
+     * Button elements used in the game.
+     */
+    Guesser.btn = {
+        submit: doc.getElementById('submit'),
+        next: doc.getElementById('nextgame'),
+        restart: doc.getElementById('restart'),
+        level: doc.querySelectorAll('.level-choose'),
+    };
 
-    const submitBtn         = document.getElementById('submit');
-    const nextGameBtn       = document.getElementById('nextgame');
-    const restartBtn        = document.getElementById('restart');
-    const answer            = document.getElementById('answer');
-    const conditionDiv      = document.getElementById('condition');
-    const titleDiv          = document.getElementById('title');
-    const guessDiv          = document.getElementById('guess-time');
-    const totalMatchesDiv   = document.getElementById('matches');
+    /**
+     * Block elements in the game UI.
+     */
+    Guesser.block = {
+        condition: doc.getElementById('condition'),
+        title: doc.getElementById('title'),
+        guess: doc.getElementById('guess-time'),
+        matches: doc.getElementById('matches'),
+        answer: doc.getElementById('answer'),
+        score: doc.getElementById('score'),
+    };
 
-    conditionDiv.style.display = 'none';
-    answer.style.pointerEvents = "all";
+    /**
+     * Messages displayed to the user based on game events.
+     */
+    Guesser.messages = {
+        /**
+         * Displays different messages based on the game state.
+         * @param {Object} data - The data describing the game state.
+         * @param {string} data.type - The type of message.
+         * @param {string} [data.try] - The direction (larger or smaller) to guess.
+         * @param {number} [data.min] - The minimum guessable number.
+         * @param {number} [data.max] - The maximum guessable number.
+         * @returns {string} - The message to display.
+         */
+        condition: (data) => {
 
-    titleDiv.textContent = `Guess number between ${min} and ${max}`;
+            switch (data.type) {
+                case "almost":
+                    return `Almost there, please try with ${data.try} number`;
 
-    submitBtn.addEventListener('click', () => {
-        let answerValue = Number(answer.value);
-        guessTime++;
-        guessDiv.innerText = guessTime;
-        conditionDiv.style.display = 'block';
-        conditionDiv.classList.remove("success");
-        conditionDiv.classList.add("error");
+                case "fail":
+                    return `Sorry, please try with ${data.try} number`;
 
-        switch (true) {
-            case answerValue == min:
-                GameSounds("./audio/wrong.mp3", 7);
-                conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
-                break;
-            case answerValue == max:
-                GameSounds("./audio/wrong.mp3", 7);
-                conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
-                break;
-            case answerValue > getRandomNum && answerValue <= max:
-                GameSounds("./audio/wrong.mp3", 7);
-                if (Math.abs(answerValue - getRandomNum) <= 2) {
-                    conditionDiv.innerText = 'Almost there, please try a smaller number';
-                } else {
-                    conditionDiv.innerText = 'Sorry, Please Try Smaller Number';
-                }
-                break;
-            case answerValue < getRandomNum && answerValue >= min:
-                GameSounds("./audio/wrong.mp3", 7);
-                if (Math.abs(answerValue - getRandomNum) <= 2) {
-                    conditionDiv.innerText = 'Almost there, please try a larger number';
-                } else {
-                    conditionDiv.innerText = 'Sorry, Please Try Larger Number';
-                }
-                break;
-            case answerValue == '':
-                conditionDiv.innerText = 'Please put the value first to guess';
-                break;
-            case answerValue == getRandomNum:
-                answer.style.pointerEvents = "none";
+                case "only":
+                    return `Please answer only between <br>${data.min} and ${data.max}`;
 
-                GameSounds("./audio/winner.mp3", 2);
+                case "empty":
+                    return `Please enter the value first to guess`;
 
-                match++;
+                case "correct":
+                    return `Your answer is correct`;
+            }
+        },
 
-                if (level === 'level-hard') {
-                    if (guessTime == 1) {
-                        score += 15;
-                    } else if (guessTime == 2) {
-                        score += 12;
-                    } else if (guessTime == 3) {
-                        score += 9;
-                    } else if (guessTime == 4 || guessTime == 5) {
-                        score += 6;
-                    } else if (guessTime == 6) {
-                        score += 3;
-                    } else {
-                        score += 1;
-                    }
-                } else if (level === 'level-medium') {
-                    if (guessTime == 1) {
-                        score += 8;
-                    } else if (guessTime == 2) {
-                        score += 6;
-                    } else if (guessTime == 3) {
-                        score += 4;
-                    } else if (guessTime == 4 || guessTime == 5) {
-                        score += 3;
-                    } else {
-                        score += 1;
-                    }
-                } else {
-                    if (guessTime == 1) {
-                        score += 5;
-                    } else if (guessTime == 2) {
-                        score += 3;
-                    } else {
-                        score += 1;
-                    }
-                }
-
-                document.getElementById('score').innerHTML = score;
-                conditionDiv.classList.remove("error");
-                conditionDiv.classList.add("success");
-
-                totalMatchesDiv.innerText = match;
-
-                conditionDiv.innerText    = 'Your Answer is correct';
-                submitBtn.style.display   = 'none';
-                nextGameBtn.style.display = 'inline-block';
-
-                break;
-            default:
-                conditionDiv.innerHTML = `Please Answer Only Between <br>${min} and ${max}`;
-                break;
+        /**
+         * Generates a title message based on min and max values.
+         * @param {number} min - The minimum value.
+         * @param {number} max - The maximum value.
+         * @returns {string} - The title message.
+         */
+        title: (min, max) => {
+            return `Guess number between ${min} and ${max}`;
         }
-    });
-
-    const ChangeLevel = (clicked) => {
-        levelBtn.forEach(button => button.classList.remove('active'));
-        clicked.classList.add('active');
-
-        level = clicked.id;
-        NewGame(clicked.id);
     };
 
-    const GameSounds = (sound, speed = 1) => {
-        let audio = new Audio(sound);
-        audio.playbackRate = speed
+    let {min: __min, max: __max} = Guesser.randomMaxAndMin();
+
+    /**
+     * Starts the game logic and handles user input for guessing.
+     */
+    Guesser.run = () => {
+        let score, guess, random, level, match;
+
+        score  = Guesser.score;
+        guess  = Guesser.guess;
+        random = Guesser.random;
+
+        Guesser.block.condition.style.display = "none";
+        Guesser.block.answer.style.pointerEvents  = "all";
+
+        Guesser.block.title.textContent = Guesser.messages.title(__min, __max);
+
+        Guesser.btn.submit.addEventListener('click', function () {
+            let answer = Guesser.block.answer.value;
+
+            guess++;
+            Guesser.block.guess.innerText = guess;
+
+            Guesser.block.condition.style.display = "block";
+            Guesser.block.condition.classList.remove("success");
+            Guesser.block.condition.classList.add("error");
+
+            if (answer === '') {
+                Guesser.sound("wrong", 7);
+                Guesser.block.condition.innerText = Guesser.messages.condition({type: "empty"});
+
+                return;
+            }
+
+            answer = Number(answer);
+            __min  = Number(__min);
+            __max  = Number(__max);
+
+            switch (true) {
+                case answer === __min:
+                    Guesser.sound("wrong", 7);
+                    Guesser.block.condition.innerHTML = Guesser.messages.condition({type: "only", min: __min, max: __max});
+
+                    break;
+
+                case answer === __max:
+                    Guesser.sound("wrong", 7);
+                    Guesser.block.condition.innerHTML = Guesser.messages.condition({type: "only", min: __min, max: __max});
+
+                    break;
+
+                case answer > random && answer <= __max:
+                    Guesser.sound("wrong", 7);
+                    if (Math.abs(answer - random) <= 2) {
+                        Guesser.block.condition.innerText = Guesser.messages.condition({type: "almost", try: "smaller"});
+                    } else {
+                        Guesser.block.condition.innerText = Guesser.messages.condition({type: "fail", try: "smaller"});
+                    }
+
+                    break;
+
+                case answer < random && answer >= __min:
+                    Guesser.sound("wrong", 7);
+                    if (Math.abs(answer - random) <= 2) {
+                        Guesser.block.condition.innerText = Guesser.messages.condition({type: "almost", try: "larger"});
+                    } else {
+                        Guesser.block.condition.innerText = Guesser.messages.condition({type: "fail", try: "larger"});
+                    }
+
+                    break;
+
+                case answer === random:
+                    Guesser.block.answer.style.pointerEvents = "none";
+
+                    Guesser.sound("winner", 2);
+
+                    Guesser.match++;
+
+                    score = Guesser.POINT(Guesser.level, guess, Number(score));
+                    Guesser.score = score;
+                    Guesser.block.score.innerHTML = score;
+
+                    Guesser.block.condition.classList.remove("error");
+                    Guesser.block.condition.classList.add("success");
+                    Guesser.block.condition.innerText = Guesser.messages.condition({type: "correct"});
+
+                    Guesser.block.matches.innerText = Guesser.match;
+
+                    Guesser.btn.submit.style.display = "none";
+                    Guesser.btn.next.style.display = "inline-block";
+
+                    break;
+
+                default:
+                    Guesser.sound("wrong", 7);
+                    Guesser.block.condition.innerHTML = Guesser.messages.condition({type: "only", min: __min, max: __max});
+                    break;
+            }
+        });
+    };
+
+    /**
+     * Changes the difficulty level of the game.
+     * @param {HTMLElement} clicked - The button clicked to change the level.
+     */
+    Guesser.changelvl = (clicked) => {
+        Guesser.btn.level.forEach(
+            button => button.classList.remove("active")
+        );
+
+        clicked.classList.add("active");
+
+        Guesser.level = clicked.id;
+        Guesser.newgame();
+    };
+
+    /**
+     * Starts a new game with updated random numbers.
+     */
+    Guesser.newgame = () => {
+        let {min: min, max: max} = Guesser.randomMaxAndMin();
+        __min = min;
+        __max = max;
+        Guesser.random  = Guesser.randomNum(__min, __max);
+        Guesser.guess   = 0;
+        Guesser.block.guess.innerText = "0";
+        Guesser.block.answer.value = "";
+        Guesser.block.title.textContent = Guesser.messages.title(__min, __max);
+        Guesser.block.condition.innerHTML = "";
+        Guesser.match.innerText = "0";
+        Guesser.btn.submit.style.display = "inline-block";
+        Guesser.btn.next.style.display = "none";
+        Guesser.block.condition.style.display = "none";
+        Guesser.block.answer.pointerEvents = "all";
+
+        Guesser.run();
+    };
+
+    /**
+     * Handles starting a new game when the 'Next Game' button is clicked.
+     */
+    Guesser.nextgame = () => {
+        Guesser.btn.next.addEventListener("click", Guesser.newgame);
+    };
+
+    /**
+     * Restarts the game when the 'Restart' button is clicked.
+     */
+    Guesser.restart = () => {
+        Guesser.btn.restart.addEventListener("click", () => {
+            Guesser.block.score.innerHTML = "0";
+            Guesser.match = 0;
+            Guesser.block.matches.innerText = "0";
+            Guesser.score = 0;
+            Guesser.newgame()
+        });
+    };
+
+    /**
+     * Plays a sound based on the provided type and number.
+     * @param {string} sound - The type of sound to play.
+     * @param {number} speed - A speed to the sound.
+     */
+    Guesser.sound = (sound, speed = 1) => {
+        let audio = new Audio(`./audio/${sound}.mp3`);
+
+        audio.playbackRate = speed;
+
         audio.play();
     };
 
-    const NewGame = (level) => {
-        ({min, max}  = randomMinMax(level));
-        getRandomNum = randomNum(min, max);
-        guessTime = 0;
-        answer.value = '';
-        titleDiv.textContent = `Guess number between ${min} and ${max}`;
-        conditionDiv.innerHTML    = '';
-        guessDiv.innerText = '0';
-        submitBtn.style.display   = 'inline-block';
-        nextGameBtn.style.display = 'none';
-        conditionDiv.style.display = 'none';
-        answer.style.pointerEvents = "all";
-    }
+    /**
+     * Calculates the score based on the current level and number of guesses.
+     * @param {string} level - The current game difficulty level.
+     * @param {number} guess - The number of guesses taken.
+     * @param {number} score - The current score.
+     * @returns {number} - The updated score.
+     */
+    Guesser.POINT = (level, guess, score) => {
+        if (level === 'level-hard') {
+            if (guess === 1) {
+                score += 15;
+            } else if (guess === 2) {
+                score += 12;
+            } else if (guess === 3) {
+                score += 9;
+            } else if (guess === 4 || guess === 5) {
+                score += 6;
+            } else if (guess === 6) {
+                score += 3;
+            } else {
+                score += 1;
+            }
+        } else if (level === 'level-medium') {
+            if (guess === 1) {
+                score += 8;
+            } else if (guess === 2) {
+                score += 6;
+            } else if (guess === 3) {
+                score += 4;
+            } else if (guess === 4 || guess === 5) {
+                score += 3;
+            } else {
+                score += 1;
+            }
+        } else {
+            if (guess === 1) {
+                score += 5;
+            } else if (guess === 2) {
+                score += 3;
+            } else {
+                score += 1;
+            }
+        }
 
-    nextGameBtn.addEventListener('click', () => {
-        NewGame(level);
-    });
+        return score;
+    };
 
-    restartBtn.addEventListener('click', () => {
-        document.getElementById('score').innerHTML = '0';
-        match = 0;
-        totalMatchesDiv.innerText = "0";
-        score = 0;
-        NewGame(level);
-    });
+    window.Guesser = Guesser;
 
-});
+})(window, document);
